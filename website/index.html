@@ -19,24 +19,24 @@
 	        <span class="icon-bar"></span>
 	        <span class="icon-bar"></span>
 	      </button>
-	      <a class="navbar-brand" href="#">Logo</a>
 	    </div>
 	    <div class="collapse navbar-collapse" id="myNavbar">
-	      <ul class="nav navbar-nav">
-	        <li class="active"><a href="#">Home</a></li>
-				  <li><a ng-href="index.html#/page/home" target="_self">Home</a></li>
-	        <li><a ng-href="index.html#/page/5" target="_self">About Us</a></li>
-	        <li><a ng-href="index.html#/page/8" target="_self">An Ode To Bacon</a></li>
-	        <li><a href="#">Contact</a></li>
+	      <ul class="nav navbar-nav" width="100vw">
+				  <li><a ng-href="index.html#/page/c_home">Home</a></li>
+	        <li><a ng-href="index.html#/page/c_approach" target="_self">Approach</a></li>
+	        <li><a ng-href="index.html#/page/c_product" target="_self">Products</a></li>
+					<li><a ng-href="index.html#/blog/" target="_self">Blogs</a><li>
+					<li><a ng-href="index.html#/page/c_contact" target="_self">Contact</a></li>
 	      </ul>
 	      <ul class="nav navbar-nav navbar-right">
-	        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+	        <!-- <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li> -->
 	      </ul>
 	    </div>
+			<div class = "container" ng-view></div>
+			<!-- remove after demo -->
+			<link rel="stylesheet" href="CSS/c_house.css">
 	  </div>
 	</nav>
-
-	<div class = "container" ng-view></div>
 
 </body>
 </html>

@@ -1,0 +1,9 @@
+#boxedLayout {
+    padding-top: 0;
+  }
+body {
+  padding-top: 0;
+}
+#mainHeader {
+  display : none;
+}

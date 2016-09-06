@@ -204,7 +204,7 @@ class Blog(object):
     """ function which puts a blog json object in s3 """
     def put_blog_object(self, blog_id, author, title, content, saved_date,
                         mDescription, mKeywords):
-        blog_key = blog_iD + ".json"
+        blog_key = blog_id + ".json"
 
         ''' Call update index '''
         self.update_index(blog_id)

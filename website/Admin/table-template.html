@@ -1,0 +1,17 @@
+<div>
+	<h1>{{ ctrl.page_title }}</h1>
+	<table class="pure-table pure-table-horizontal" style="min-width:100%">
+		<thead>
+			<tr>
+				<th ng-repeat="col in ctrl.cols">{{ col }}</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr ng-repeat="row in ctrl.rows">
+				<td ng-repeat="col in ctrl.cols">{{ row[col] }}</td>
+			</tr>
+			
+		</tbody>
+	</table>
+</div>

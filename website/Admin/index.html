@@ -59,69 +59,8 @@
 </header>
 <div class="content container" ng-controller="DashboardController as dashboard">
 	<div class="row">
-		<div class="col-xs-12">
-			<h1>{{ dashboard.response.page_title }}</h1>
-			<div ng-show="dashboard.response.type='table'">
-				<table class="pure-table pure-table-horizontal" style="min-width:100%">
-					<thead>
-						<tr>
-							<th ng-repeat="col in dashboard.response.cols">{{ col }}</th>
-						</tr>
-					</thead>
-
-					<tbody>
-						<tr ng-repeat="row in dashboard.response.rows">
-							<td ng-repeat="col in dashboard.response.cols">{{ row[col] }}</td>
-						</tr>
-						
-					</tbody>
-				</table>
-			</div>
-			<div ng-show="dashboard.response.type='form'" class="col-md-8 col-md-offset-2">
-			<form>
-				<div ng-repeat="input in dashboard.response.inputs">
-					<div ng-switch on="input.type">
-					
-						<div ng-switch-when="textarea">
-							<div class="form-group">
-								<label for="{{ input.title }}">{{ input.title }}</label>
-								<textarea type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}">{{ input.value }}</textarea>
-							  </div>
-						</div>
-						
-						<div ng-switch-when="mce">
-							<div class="form-group">
-								<label for="{{ input.title }}">{{ input.title }}</label>
-								<textarea type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}">{{ input.value }}</textarea>
-							  </div>
-						</div>
-						
-						<div ng-switch-when="select"><!-- Selecting from a dropdown list of options. -->
-							<div class="form-group">
-								<label for="{{ input.title }}">{{ input.title }}</label>
-								<select name="{{ input.name }}" class="form-control">
-									<option ng-repeat="option in input.options" value="{{ option.name }}">{{ option.title }}</option>
-								</select>
-							  </div>
-						</div>
-						
-						<div ng-switch-when="checkbox">
-							<div class="checkbox">
-								<label><input type="checkbox" ng-checked="input.checked == 'true'" value="on" name="{{ input.name }}">{{ input.title }}</label>
-							</div>
-						</div>
-						
-						<div ng-switch-default> <!-- By default assume the input is a standard box type. -->
-							 <div class="form-group">
-								<label for="{{ input.title }}">{{ input.title }}</label>
-								<input type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}" value="{{ input.value }}">
-							  </div>
-						</div>
-					</div><!--Close ng-switch-->
-				</div><!--Close loop over inputs-->
-				<button type="submit" class="btn btn-default">Submit</button>
-			</form>
-			</div><!-- Close forms code -->
+		<div class="col-xs-12" ng-view>
+			<!-- Page HTML is inserted in here -->
 		</div>
 	</div>
 </div>

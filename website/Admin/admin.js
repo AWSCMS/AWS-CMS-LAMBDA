@@ -143,6 +143,19 @@ app.controller('EditPostController', ['$http', function($http){
 	}).then(function(response) {
 		//Transform the data as necessary.
         
+		controller.inputs =[
+			{
+				"type": "text",
+				"title": "Title",
+				"placeholder": "My Adventures In Knitting"
+			},
+			{
+				"type": "mce",
+				"title": "Content"
+			}
+		];
+		
+		
 		controller.response = response.data; //Push the data from the API response into the "response" array of this controller
 		
 		console.log(controller.response); //Log the controller for debugging.
@@ -171,8 +184,6 @@ app.controller('ListPostsController', ['$http', function($http){
 				"Date": "21st of August"
 			}
 		];
-		
-		controller.response = response.data; //Push the data from the API response into the "response" array of this controller
 		
 		console.log(controller.response); //Log the controller for debugging.
     });

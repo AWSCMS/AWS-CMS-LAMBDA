@@ -1,12 +1,13 @@
-<html ng-app="dashboard">
+<html ng-app="KitsuiDashboard">
 <head>
 <title>Admin | Honda Lover's Blog</title>
 <link rel="stylesheet" href="https://bootswatch.com/united/bootstrap.min.css" />
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="JavaScript/admin.js"></script>
+<script src="admin.js"></script>
 </head>
 <body>
 <header class="container">
@@ -57,7 +58,7 @@
     </ul>
 </div>
 </header>
-<div class="content container" ng-controller="DashboardController as dashboard">
+<div class="content container">
 	<div class="row">
 		<div class="col-xs-12" ng-view>
 			<!-- Page HTML is inserted in here -->

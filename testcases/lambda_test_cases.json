@@ -88,9 +88,7 @@ Get all blogs
 create blog
 
 {
-  "params": {
     "request": "saveNewBlog",
-    "token": "testToken1234567",
     "blog": {
       "author": "Jeremy",
       "title": "Hondas are the best type of car",
@@ -98,7 +96,6 @@ create blog
       "metaDescription": "test Description",
       "metaKeywords": "keyword1, keyword2, keyword3, keyword4"
     }
-  }
 }
 
 Edit Blog
@@ -313,9 +310,9 @@ Get Site Settings
 Get Presigned Upload
 
 {
+  "token": "testToken1234567",
   "params": {
     "request": "uploadImage",
-    "token": "testToken1234567",
     "fileName": "fun.jpg",
     "acl": "public-read"
   }

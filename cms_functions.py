@@ -55,8 +55,7 @@ class AwsFunc:
         # Store file data and make replacements to files with certain mimetypes
         with open(path, "rb") as file_body:
             body = file_body.read()
-        mime_replacements = ["text/html", "application/javascript"]
-        if mime[0] in mime_replacements:
+        if type(mime[0]) is str and not mime[0].startswith("image/"):
             body = replace_variables(body, **self.constants)
         put_kwargs.update({
             "Bucket": bucket_name,
@@ -89,11 +88,32 @@ class AwsFunc:
             bucket_kwargs["CreateBucketConfiguration"] = {
                 "LocationConstraint": self.region}
         
+        # Create bucket
         try:
             s3 = boto3.client("s3")
             print "Creating bucket: %s" % (bucket_name)
             bucket = s3.create_bucket(**bucket_kwargs)
             print "Bucket created"
+        except botocore.exceptions.ClientError as e:
+            print e.response["Error"]["Code"]
+            print e.response["Error"]["Message"]
+            sys.exit()
+        
+        # add bucket CORS
+        try:
+            s3 = boto3.client("s3")
+            s3.put_bucket_cors(
+                Bucket=bucket_name,
+                CORSConfiguration={
+                    "CORSRules": [{
+                        "AllowedOrigins": ["*"],
+                        "AllowedMethods": ["GET", "POST"],
+                        "AllowedHeaders": ["Authorization", "Cache-Control",
+                                           "Upgrade-Insecure-Requests"],
+                        "MaxAgeSeconds": 3000
+                    }]
+                }
+            )
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
@@ -105,6 +125,8 @@ class AwsFunc:
             for fl in files:
                 path = os.path.join(root, fl)
                 key = path[8:]
+                # If the file has backslashes in it, replace them with forwardslashes
+                key = key.replace("\\", "/")
                 self.upload_file(path, key)
         print "Bucket populated"
 

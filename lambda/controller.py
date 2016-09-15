@@ -34,7 +34,9 @@ def handler(event, context):
     security = Security(event["params"], context)
     upload_image = UploadImage(event["params"], context)
     menu = Menu(event["params"], context)
-
+    
+    equals_index = event["token"].find("=") + 1
+    event["token"] = event["token"][equals_index:]
     event["params"]["token"] = event["token"]
 
     # Map request type to function calls
@@ -70,10 +72,10 @@ def handler(event, context):
     # Get constants created by setup.py
     with open("constants.json", "r") as constants_file:
         constants = json.loads(constants_file.read())
-
+	
     is_authenticated = False
     request = event["params"]["request"]
-    
+
     # Check user authentication
     if request == "loginUser" or security.authenticate():
         # Check user authorization
@@ -87,11 +89,15 @@ def handler(event, context):
             # Check if form ui is required to be returned
             if request.startswith("edit"):
                 response = ui.getForm(response)
+            # If returning a table
+            elif functionMapping[request].__name__.startswith("get_all"):
+                # Send back data for table
+                response = ui.getTable("All " + request[3:],response)
             # Return response to client
             return response
         else:
             response = Response("Authorization Failed", None)
-            return response.to_JSON() 
+            return response.to_JSON()
     else:
         response = Response("Authentication Failed", None)
         return response.to_JSON()

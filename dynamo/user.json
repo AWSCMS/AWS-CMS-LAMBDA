@@ -1,10 +1,13 @@
 {
 	"Item": {
-		"ID": {"S": "0322f11b-2ae8-48d0-aac6-1b2dc5400816"},
-		"Username": {"S": "Admin"},
-		"Password": {"S": "$pbkdf2-sha256$20000$M.bc23uPkbIW4nwvBUBI6Q$lPuUH11WHrFy4tZFPpR/krgJcv86beoHtq4gYOBY55o"},
 		"Email": {"S": "email@gmail.com"},
-		"Role": {"S": "0322f11b-2ae8-48d0-aac6-1b2dc5400816"}
+		"Password": {"S": "$pbkdf2-sha256$10000$8J5TqrX2fs/537tXKsUYgw$gZv3DmaPzyfQKnmh7F5689c4HO0yLVPcgaOn5fgF.58"},
+		"UserType": {"S": "admin"},
+		"Permissions": {
+			"L": [
+				{"S": "all"}
+			]
+		}
 	},
 	"ReturnConsumedCapacity": "TOTAL"
 }

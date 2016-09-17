@@ -184,24 +184,6 @@ class AwsFunc:
         except botocore.exceptions.ClientError as e:
             print e
             sys.exit()
-    
-
-    def create_role_table(self):
-        """ Creates a role table. """
-        with open("dynamo/role_table.json", "r") as thefile:
-            role_table_json = json.loads(thefile.read())
-        role_table_json["TableName"] = self.constants["ROLE_TABLE"]
-        
-        try:
-            print "Creating table: %s" % (self.constants["ROLE_TABLE"])
-            dynamodb = boto3.client("dynamodb")
-            role_table = dynamodb.create_table(**role_table_json)
-            self.wait_for_table(role_table)
-            print "Table created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
 
 
     def create_user_table(self):
@@ -256,23 +238,6 @@ class AwsFunc:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
             sys.exit()
-
-    def create_menu_table(self):
-        """ Creates a menu table. """
-        with open("dynamo/menu_table_structure.json", "r") as thefile:
-            menu_table_json = json.loads(thefile.read())
-        menu_table_json["TableName"] = self.constants["MENU_TABLE"]
-            
-        try:
-            print "Creating table: %s" % (self.constants["MENU_TABLE"])
-            dynamodb = boto3.client("dynamodb")
-            menu_table = dynamodb.create_table(**menu_table_json)
-            self.wait_for_table(menu_table)
-            print "Menu table created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
         
 
     def create_page_table(self):
@@ -290,24 +255,7 @@ class AwsFunc:
         except botocore.exceptions.ClientError as e:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
-            sys.exit()            
-            
-    def create_site_settings_table(self):
-        """ Creates a site settings table. """
-        with open("dynamo/site_settings_table.json", "r") as thefile:
-            site_settings_table_json = json.loads(thefile.read())
-        site_settings_table_json["TableName"] = self.constants["SETTINGS_TABLE"]
-        
-        try:
-            print "Creating table: %s" % (self.constants["SETTINGS_TABLE"])
-            dynamodb = boto3.client("dynamodb")
-            site_settings_table = dynamodb.create_table(**site_settings_table_json)
-            self.wait_for_table(site_settings_table)
-            print "Settings table created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
+            sys.exit()          
 
 
     def wait_for_table(self, table):
@@ -337,114 +285,12 @@ class AwsFunc:
                 TableName=table["TableDescription"]["TableName"])
 
 
-    def create_site_settings_db_entry(self):
-        """ Creates a default site settings in the site settings table """
-        with open("dynamo/site_settings.json", "r") as thefile:
-            ss_json = json.loads(thefile.read())
-        for json_item in ss_json["Items"]:
-            json_item["TableName"] = self.constants["SETTINGS_TABLE"]
-            try:
-                print "Creating Site settings db entry"
-                dynamodb = boto3.client("dynamodb")
-                dynamodb.put_item(**json_item)
-                print "Site settings db entry created"
-            except botocore.exceptions.ClientError as e:
-                print e.response["Error"]["Code"]
-                print e.response["Error"]["Message"]
-                sys.exit()
-
-
-    def create_blog_db_entry(self):
-        """ Creates a default blog in the Blog table """
-        with open("dynamo/blog.json", "r") as thefile:
-            blog_json = json.loads(thefile.read())
-        blog_json["TableName"] = self.constants["BLOG_TABLE"]
-        
-        try:
-            print "Creating Blog entry"
-            dynamodb = boto3.client("dynamodb")
-            dynamodb.put_item(**blog_json)
-            print "Blog created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
-
-    def create_menu_db_entries(self):
-        """ Creates a default menu entries in the Menu table """
-        with open("dynamo/menu_table_data.json", "r") as thefile:
-            menu_json_temp = thefile.read()
-            menu_json_temp = menu_json_temp.replace("MenuTable", self.constants["MENU_TABLE"])
-            menu_json = json.loads(menu_json_temp)
-        
-        try:
-            print "Creating Menu entries"
-            dynamodb = boto3.client("dynamodb")
-            dynamodb.batch_write_item(**menu_json)
-            print "Menu entries created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
-
-    def create_page_db_entry(self):
-        """ Creates a Page in the Page table """
-        with open("dynamo/page.json", "r") as thefile:
-            page_json = json.loads(thefile.read())
-        page_json["TableName"] = self.constants["PAGE_TABLE"]
-        
-        try:
-            print "Creating Page db entry"
-            dynamodb = boto3.client("dynamodb")
-            dynamodb.put_item(**page_json)
-            print "Page db entry created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
-
-
-    def create_form_db_entry(self):
-        """ Creates a Form in the Form table """
-        with open("dynamo/form.json", "r") as thefile:
-            form_json = json.loads(thefile.read())
-        form_json["TableName"] = self.constants["FORM_TABLE"]
-        
-        try:
-            print "Creating Form db entry"
-            dynamodb = boto3.client("dynamodb")
-            dynamodb.put_item(**form_json)
-            print "Form db entry created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
-
-
-    def create_admin_role_db_entry(self):
-        """ Creates an entry in the role database that represents an
-        admin role
-        """
-        with open("dynamo/role.json", "r") as thefile:
-            admin_role_json = json.loads(thefile.read())
-        admin_role_json["TableName"] = self.constants["ROLE_TABLE"]
-        
-        try:
-            print "Creating admin role db entry"
-            dynamodb = boto3.client("dynamodb")
-            dynamodb.put_item(**admin_role_json)
-            print "Admin role db entry created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
-
-
     def create_admin_user_db_entry(self):
         """ Creates an entry in the user database that represents an admin """
         with open("dynamo/user.json", "r") as thefile:
             admin_user_json = json.loads(thefile.read())
         admin_user_json["TableName"] = self.constants["USER_TABLE"]
+        admin_user_json["Item"]["ID"] = {"S": str(uuid.uuid4())}
         
         try:
             print "Creating admin db entry"
@@ -455,23 +301,7 @@ class AwsFunc:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
             sys.exit()
-
-
-    def create_token_db_entry(self):
-        """ Creates a token in the token database """
-        with open("dynamo/token.json", "r") as thefile:
-            token_json = json.loads(thefile.read())
-        token_json["TableName"] = self.constants["TOKEN_TABLE"]
-        
-        try:
-            print "Creating token db entry"
-            dynamodb = boto3.client("dynamodb")
-            dynamodb.put_item(**token_json)
-            print "Token db entry created"
-        except botocore.exceptions.ClientError as e:
-            print e.response["Error"]["Code"]
-            print e.response["Error"]["Message"]
-            sys.exit()
+            
 
     def update_lambda(self):
         try:
@@ -484,11 +314,22 @@ class AwsFunc:
             print e.response["Error"]["Code"]
             print e.response["Error"]["Message"]
             sys.exit()
+            
 
     def create_lambda_function(self):
         """ Creates a lamda function and uploads AWS CMS to to it """
-        with open("lambda/role_policy.json", "r") as thefile:
-            lmda_role_json = thefile.read()
+        lmda_role = json.dumps({
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        })
         
         # Create the lambda iam role
         try:
@@ -497,7 +338,7 @@ class AwsFunc:
             lambda_role_name = self.constants["LAMBDA_ROLE"]
             lambda_role = iam.create_role(
                 RoleName=lambda_role_name,
-                AssumeRolePolicyDocument=lmda_role_json
+                AssumeRolePolicyDocument=lmda_role
             )
             
             # Attach permissions to the lambda role
@@ -597,7 +438,7 @@ class AwsFunc:
                 }
             )
             
-            # Set the put integration of the POST method
+            # Put integration in the POST method
             api_gateway.put_integration(
                 restApiId=rest_api_id,
                 resourceId=rest_api_root_id,
@@ -608,18 +449,21 @@ class AwsFunc:
                 uri=self.constants["API_INVOCATION_URI"],
                 requestTemplates={
                     "application/json": (
-                        "{\"params\": $input.body, "
-                              "#if($input.params(\"Cookie\") && $input.params(\"Cookie\") != \"\") "
-                                  "\"token\": \"$input.params(\"Cookie\")\" "
-                              "#else "
-                                  "\"token\": \"\" "
-                              "#end"
+                        "#if($input.params(\"Cookie\") && $input.params(\"Cookie\") != \"\") "
+                        "{"
+                            "\"body\": $input.body, "
+                            "\"token\": \"$input.params(\"Cookie\")\""
                         "}"
+                        "#else"
+                        "{"
+                            "\"body\": $input.body"
+                        "}"
+                        "#end"
                     )
                 }
             )
             
-            # Set the put method response of the POST method
+            # Put a 200 method response in the POST method
             api_gateway.put_method_response(
                 restApiId=rest_api_id,
                 resourceId=rest_api_root_id,
@@ -635,7 +479,7 @@ class AwsFunc:
                 }
             )
             
-            # Set the put integration response of the POST method
+            # Put a 200 integration response in the POST method
             api_gateway.put_integration_response(
                 restApiId=rest_api_id,
                 resourceId=rest_api_root_id,
@@ -643,14 +487,47 @@ class AwsFunc:
                 statusCode="200",
                 responseParameters={
                     "method.response.header.Set-Cookie": (
-                        "integration.response.body.Cookie"),
+                        "integration.response.body.Set-Cookie"),
                     "method.response.header.Access-Control-Allow-Credentials": (
                         "\'true\'"),
                     "method.response.header.Access-Control-Allow-Origin": (
                         "\'https://s3.amazonaws.com\'")
                 },
                 responseTemplates={
-                    "application/json": ""
+                    "application/json": "$input.body"
+                }
+            )
+            
+            # Put a 400 method response in the POST method
+            api_gateway.put_method_response(
+                restApiId=rest_api_id,
+                resourceId=rest_api_root_id,
+                httpMethod="POST",
+                statusCode="400",
+                responseParameters={
+                    "method.response.header.Access-Control-Allow-Credentials": False,
+                    "method.response.header.Access-Control-Allow-Origin": False
+                },
+                responseModels={
+                    "application/json": "Empty"
+                }
+            )
+            
+            # Put a 400 integration response in the POST method
+            api_gateway.put_integration_response(
+                restApiId=rest_api_id,
+                resourceId=rest_api_root_id,
+                httpMethod="POST",
+                statusCode="400",
+                selectionPattern=".*\"status\": 400.*",
+                responseParameters={
+                    "method.response.header.Access-Control-Allow-Credentials": (
+                        "\'true\'"),
+                    "method.response.header.Access-Control-Allow-Origin": (
+                        "\'https://s3.amazonaws.com\'")
+                },
+                responseTemplates={
+                    "application/json": "$input.path('$.errorMessage')"
                 }
             )
             print "POST method added"
@@ -821,7 +698,12 @@ class AwsFunc:
             "https://%s.execute-api.%s.amazonaws.com/prod" % (
                 self.constants["REST_API_ID"], self.region))
 
-
+    def print_login_link(self):
+        print "Username: email@gmail.com"
+        print "Password: password123"
+        print "Login at: https://s3.amazonaws.com/%s/HTML/login.html" % (
+            self.constants["BUCKET"])
+    
     @staticmethod
     def get_account_id():
         sts = boto3.client("sts")

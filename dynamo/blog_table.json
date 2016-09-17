@@ -1,22 +1,14 @@
 {	
 	"AttributeDefinitions": [
 		{
-			"AttributeName": "BlogID",
-			"AttributeType": "S"
-		},
-		{
-			"AttributeName": "Author",
+			"AttributeName": "ID",
 			"AttributeType": "S"
 		}
 	],
 	"KeySchema": [
 		{
-			"AttributeName": "BlogID",
+			"AttributeName": "ID",
 			"KeyType": "HASH"
-		},
-		{
-			"AttributeName": "Author",
-			"KeyType": "RANGE"
 		}
 	],
 	"ProvisionedThroughput": {

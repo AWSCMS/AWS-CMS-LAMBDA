@@ -128,8 +128,18 @@ app.controller('AddPostController', ['$http', function($http){
 		//An object to post to API goes here.
 	}).then(function(response) {
 		//Transform the data as necessary.
-        
-		controller.response = response.data; //Push the data from the API response into the "response" array of this controller
+		
+		controller.inputs =[
+			{
+				"type": "text",
+				"title": "Title",
+				"placeholder": "My Adventures In Knitting"
+			},
+			{
+				"type": "mce",
+				"title": "Content"
+			}
+		];
 		
 		console.log(controller.response); //Log the controller for debugging.
     });
@@ -143,17 +153,7 @@ app.controller('EditPostController', ['$http', function($http){
 	}).then(function(response) {
 		//Transform the data as necessary.
         
-		controller.inputs =[
-			{
-				"type": "text",
-				"title": "Title",
-				"placeholder": "My Adventures In Knitting"
-			},
-			{
-				"type": "mce",
-				"title": "Content"
-			}
-		];
+		
 		
 		
 		controller.response = response.data; //Push the data from the API response into the "response" array of this controller
@@ -167,23 +167,13 @@ app.controller('ListPostsController', ['$http', function($http){
 	var controller = this; //Needed to pass this object into the below function
 	$http.post(apiendpoint, {
 		//An object to post to API goes here.
+		"request": "getBlogs"
 	}).then(function(response) {
 		//Transform the data as necessary.
         
-		controller.cols = ["Title", "Content", "Date"];
-		
-		controller.rows = [
-			{
-				"Title": "My Awesome Title",
-				"Content": "Me Awesome Content",
-				"Date": "23rd of August"
-			},
-			{
-				"Title": "My Other Awesome Title",
-				"Content": "My Other Awesome Content",
-				"Date": "21st of August"
-			}
-		];
+		//Push the table information from the response into the controller.
+		controller.cols = response.cols;
+		controller.rows = response.rows;
 		
 		console.log(controller.response); //Log the controller for debugging.
     });

@@ -117,39 +117,58 @@ var app = angular.module('KitsuiDashboard', ['ngRoute'])
 
 
 
+
+
+
+
+
 /*** Controllers Below Here ***/
 
 /* Post Controllers */
 
 //Handles adding a post.
 app.controller('AddPostController', ['$http', function($http){
-	var controller = this; //Needed to pass this object into the below function
-	$http.post(apiendpoint, {
-		//An object to post to API goes here.
-	}).then(function(response) {
-		//Transform the data as necessary.
+	//var controller = this; //Needed to pass this object into the below function
 		
-		controller.inputs =[
-			{
-				"type": "text",
-				"title": "Title",
-				"placeholder": "My Adventures In Knitting"
-			},
-			{
-				"type": "mce",
-				"title": "Content"
-			}
-		];
-		
-		console.log(controller.response); //Log the controller for debugging.
-    });
+	this.inputs =[
+		{
+			"type": "text",
+			"title": "Title",
+			"prefill": "My Adventures In Knitting"
+		},
+		{
+			"type": "mce",
+			"title": "Content"
+		}
+	];
+	
+	console.log(controller.response); //Log the controller for debugging.
+
 } ]);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 //Handles editing a post
-app.controller('EditPostController', ['$http', function($http){
+app.controller('EditPostController', ['$http', '$routeParams', function($http, $routeParams){
 	var controller = this; //Needed to pass this object into the below function
 	$http.post(apiendpoint, {
 		//An object to post to API goes here.
+		"request": "getBlogData",
+        "token": "testToken1234567",
+        "blog": {
+            "blogID": $routeParams.postid
+		}
 	}).then(function(response) {
 		//Transform the data as necessary.
         
@@ -162,22 +181,43 @@ app.controller('EditPostController', ['$http', function($http){
     });
 } ]);
 
+
+
+
+
+
+
+
+
+
+
 //Handles listing all posts.
 app.controller('ListPostsController', ['$http', function($http){
 	var controller = this; //Needed to pass this object into the below function
 	$http.post(apiendpoint, {
-		//An object to post to API goes here.
-		"request": "getBlogs"
+		"token": "testToken1234567",
+		"body": {
+			"request": "getAllBlogs"
+		}
 	}).then(function(response) {
 		//Transform the data as necessary.
         
 		//Push the table information from the response into the controller.
-		controller.cols = response.cols;
-		controller.rows = response.rows;
+		controller.cols = response.data.cols;
+		controller.rows = response.data.rows;
 		
-		console.log(controller.response); //Log the controller for debugging.
+		console.log(response); //Log the controller for debugging.
     });
 } ]);
+
+
+
+
+
+
+
+
+
 
 //Handles deleting a post
 app.controller('DeletePostController', ['$http', function($http){
@@ -192,6 +232,67 @@ app.controller('DeletePostController', ['$http', function($http){
 		console.log(controller.response); //Log the controller for debugging.
     });
 } ]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* Page Controllers */

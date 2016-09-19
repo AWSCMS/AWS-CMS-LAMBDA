@@ -66,7 +66,7 @@ class Page(object):
             "Keywords": {"L": []}
         }
         for keyword in keywords:
-            blog["Keywords"]["L"].append({"S": keyword})
+            page["Keywords"]["L"].append({"S": keyword})
 
         # Put the page in the page table
         try:

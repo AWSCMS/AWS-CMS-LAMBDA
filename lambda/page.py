@@ -81,7 +81,7 @@ class Page(object):
         
         # TODO: Add paging table
         
-        # Add blog as json to bucket
+        # Add page as json to bucket
         try:
             s3 = boto3.client("s3")
             s3.put_object(
@@ -94,11 +94,11 @@ class Page(object):
             return {"error": e.response["Error"]["Code"],
                     "data": {"exception": str(e), "action": action}}
 
-        return {"message": "Successfully put page", "data": blog}
+        return {"message": "Successfully put page", "data": page}
 
     @staticmethod
     def delete_page(page_name, page_table, bucket):
-        """ Deletes a blog from the blog table """
+        """ Deletes a page from the page table """
         try:
             dynamodb = boto3.client("dynamodb")
             delete_response = dynamodb.delete_item(
@@ -113,7 +113,7 @@ class Page(object):
         
         # TODO: Modify once pagination is implemented
         
-        # Deletes the blog from the bucket
+        # Deletes the page from the bucket
         try:
             s3 = boto3.client("s3")
             delete_response = s3.delete_object(

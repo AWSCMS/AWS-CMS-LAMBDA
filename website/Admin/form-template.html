@@ -1,27 +1,27 @@
 <div class="col-md-8 col-md-offset-2">
-<h1>{{ ctrl.response.page_title }}</h1>
-	<form>
+	<h1>{{ ctrl.page_title }}</h1>
+	<form ng-submit="ctrl.submit()">
 		<div ng-repeat="input in ctrl.inputs">
 			<div ng-switch on="input.type">
 			
 				<div ng-switch-when="textarea">
 					<div class="form-group">
 						<label for="{{ input.title }}">{{ input.title }}</label>
-						<textarea type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}">{{ input.value }}</textarea>
+						<textarea type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}" ng-disabled="input.disabled" ng-model="input.value">{{ input.value }}</textarea>
 					  </div>
 				</div>
 				
 				<div ng-switch-when="mce">
 					<div class="form-group">
 						<label for="{{ input.title }}">{{ input.title }}</label>
-						<textarea type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}">{{ input.value }}</textarea>
+						<textarea type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}" ng-disabled="input.disabled" ng-model="input.value">{{ input.value }}</textarea>
 					  </div>
 				</div>
 				
 				<div ng-switch-when="select"><!-- Selecting from a dropdown list of options. -->
 					<div class="form-group">
 						<label for="{{ input.title }}">{{ input.title }}</label>
-						<select name="{{ input.name }}" class="form-control">
+						<select name="{{ input.name }}" class="form-control" ng-disabled="input.disabled" ng-model="input.value">
 							<option ng-repeat="option in input.options" value="{{ option.name }}">{{ option.title }}</option>
 						</select>
 					  </div>
@@ -29,14 +29,14 @@
 				
 				<div ng-switch-when="checkbox">
 					<div class="checkbox">
-						<label><input type="checkbox" ng-checked="input.checked == 'true'" value="on" name="{{ input.name }}">{{ input.title }}</label>
+						<label><input type="checkbox" ng-checked="input.checked == 'true'" value="on" ng-disabled="input.disabled" name="{{ input.name }}">{{ input.title }}</label>
 					</div>
 				</div>
 				
 				<div ng-switch-default> <!-- By default assume the input is a standard box type. -->
 					 <div class="form-group">
 						<label for="{{ input.title }}">{{ input.title }}</label>
-						<input type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}" value="{{ input.value }}">
+						<input type="{{ input.type }}" class="form-control" id="{{ input.title }}" prefill="{{ input.prefill }}" value="{{ input.value }}" ng-disabled="input.disabled" ng-model="input.value">
 					  </div>
 				</div>
 			</div><!--Close ng-switch-->

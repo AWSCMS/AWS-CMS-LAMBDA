@@ -3,13 +3,13 @@
 	<table class="table table-striped" style="min-width:100%">
 		<thead>
 			<tr>
-				<th ng-repeat="col in ctrl.cols">{{ col }}</th>
+				<th ng-repeat="col in ctrl.cols" ng-bind-html="col | html"></th>
 			</tr>
 		</thead>
 
 		<tbody>
 			<tr ng-repeat="row in ctrl.rows">
-				<td ng-repeat="col in ctrl.cols">{{ row[col] }}</td>
+				<td ng-repeat="col in ctrl.cols" ng-bind-html="row[col] | html"></td>
 			</tr>
 			
 		</tbody>

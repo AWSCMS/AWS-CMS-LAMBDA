@@ -1,10 +1,13 @@
 (function(){
 	
 /*** Globals ***/
-var apiendpoint = "$(API_URL)"; //Enter API gateway in here. Should be done automatically.
+var apiendpoint = "https://su2wwwksy0.execute-api.us-east-1.amazonaws.com/prod"; //Enter API gateway in here. Should be done automatically.
 
 var app = angular.module('KitsuiDashboard', ['ngRoute'])
-	.config(function($locationProvider, $routeProvider) {
+	.config(function($locationProvider, $routeProvider, $httpProvider) {
+		
+		//Testing cookie sending
+		$httpProvider.defaults.withCredentials = true;
 		
 		//Post routing
 		$routeProvider.when('/post/add', {
@@ -129,7 +132,7 @@ var app = angular.module('KitsuiDashboard', ['ngRoute'])
 //Handles adding a post.
 app.controller('AddPostController', ['$http', function($http){
 	//var controller = this; //Needed to pass this object into the below function
-		
+	this.page_title = "Add Post";
 	this.inputs =[
 		{
 			"type": "text",
@@ -142,11 +145,22 @@ app.controller('AddPostController', ['$http', function($http){
 		}
 	];
 	
-	console.log(controller.response); //Log the controller for debugging.
+	
+	/*
+	this.submit() = function(){
+		$http.post(apiendpoint, {
+			
+		}
+		).then(function(response){
+			
+			
+		});
+	}*/
+	//console.log(controller.response); //Log the controller for debugging.
 
 } ]);
 
-
+app.filter('html', function($sce) { return $sce.trustAsHtml; });
 
 
 
@@ -163,21 +177,30 @@ app.controller('AddPostController', ['$http', function($http){
 app.controller('EditPostController', ['$http', '$routeParams', function($http, $routeParams){
 	var controller = this; //Needed to pass this object into the below function
 	$http.post(apiendpoint, {
-		//An object to post to API goes here.
-		"request": "getBlogData",
-        "token": "testToken1234567",
-        "blog": {
-            "blogID": $routeParams.postid
-		}
-	}).then(function(response) {
+			"request": "getBlog",
+			"blogID": $routeParams.postid
+		}).then(function(response) {
 		//Transform the data as necessary.
         
+		controller.inputs =[
+			{
+				"type": "text",
+				"title": "Title",
+				"prefill": "My Adventures In Knitting",
+				"value": response.data.data.Title.S
+			},
+			{
+				"type": "mce",
+				"title": "Content",
+				"value": response.data.data.Content.S
+			}
+		];
 		
 		
 		
-		controller.response = response.data; //Push the data from the API response into the "response" array of this controller
+		//controller.response = response.data; //Push the data from the API response into the "response" array of this controller
 		
-		console.log(controller.response); //Log the controller for debugging.
+		console.log(response.data); //Log the controller for debugging.
     });
 } ]);
 
@@ -195,16 +218,25 @@ app.controller('EditPostController', ['$http', '$routeParams', function($http, $
 app.controller('ListPostsController', ['$http', function($http){
 	var controller = this; //Needed to pass this object into the below function
 	$http.post(apiendpoint, {
-		"token": "testToken1234567",
-		"body": {
 			"request": "getAllBlogs"
-		}
-	}).then(function(response) {
+		}).then(function(response) {
 		//Transform the data as necessary.
         
 		//Push the table information from the response into the controller.
-		controller.cols = response.data.cols;
-		controller.rows = response.data.rows;
+		controller.cols = ['Title', 'Content', 'Author', 'Delete'];
+		
+		controller.rows = [];
+		
+		for (i = 0; i < response.data.data.length; ++i){
+			controller.rows.push(
+				{
+					"Title": "<a href=\"#/post/edit/"+response.data.data[i].ID.S+"\">"+response.data.data[i].Title.S+"</a>",
+					"Content": response.data.data[i].Content.S,
+					"Author":response.data.data[i].Author.S,
+					"Delete":"<a class=\"text-danger\" href=\"#/post/delete/"+response.data.data[i].ID.S+"\">Delete "+response.data.data[i].Title.S+"</a>"
+				}
+			);
+		}
 		
 		console.log(response); //Log the controller for debugging.
     });
@@ -220,17 +252,41 @@ app.controller('ListPostsController', ['$http', function($http){
 
 
 //Handles deleting a post
-app.controller('DeletePostController', ['$http', function($http){
+app.controller('DeletePostController', ['$http', '$routeParams', function($http, $routeParams){
 	var controller = this; //Needed to pass this object into the below function
 	$http.post(apiendpoint, {
 		//An object to post to API goes here.
+		"request": "getBlog",
+		"blogID": $routeParams.postid
 	}).then(function(response) {
 		//Transform the data as necessary.
-        
-		controller.response = response.data; //Push the data from the API response into the "response" array of this controller
-		
-		console.log(controller.response); //Log the controller for debugging.
+        controller.page_title = "Are you sure you want to delete this post?";
+		controller.inputs =[
+			{
+				"type": "text",
+				"disabled": true,
+				"title": "Title",
+				"prefill": "My Adventures In Knitting",
+				"value": response.data.data.Title.S
+			},
+			{
+				"type": "mce",
+				"disabled": true,
+				"title": "Content",
+				"value": response.data.data.Content.S
+			}
+		];
     });
+	this.submit = function(){
+		$http.post(apiendpoint, {
+			//An object to post to API goes here.
+			"request": "deleteBlog",
+			"blogID": $routeParams.postid
+		}).then(function(response){
+			alert("Post was deleted.");
+			window.location = "#/post/list/0";
+		});
+	};
 } ]);
 
 

@@ -44,7 +44,7 @@ var app = angular.module('KitsuiDashboard', ['ngRoute'])
         });
 		$routeProvider.when('/page/list/:current_page', {
            templateUrl: 'table-template.html', 
-           controller: 'ListPostsController',
+           controller: 'ListPagesController',
 		   controllerAs: 'ctrl'
         });
 		$routeProvider.when('/page/delete/:pageid', {
@@ -356,16 +356,36 @@ app.controller('DeletePostController', ['$http', '$routeParams', function($http,
 
 //Handles adding a page
 app.controller('AddPageController', ['$http', function($http){
-	var controller = this; //Needed to pass this object into the below function
-	$http.post(apiendpoint, {
-		//An object to post to API goes here.
-	}).then(function(response) {
-		//Transform the data as necessary.
-        
-		controller.response = response.data; //Push the data from the API response into the "response" array of this controller
-		
-		console.log(controller.response); //Log the controller for debugging.
-    });
+	scope = this;
+	scope.page_title = "Add Page";
+	
+	scope.inputs =[
+		{
+			"type": "text",
+			"title": "Title",
+			"value": this.title,
+			"prefill": "About Widgets, inc."
+		},
+		{
+			"type": "mce",
+			"title": "Content",
+			"value": this.content
+		}
+	];
+	scope.submit = function(){
+		$http.post(apiendpoint, {
+			//Data to post
+			"request": "putPage",
+			"pageName": "Page Title",
+			"content": "Page content",
+			"description": " ",
+			"keywords": [" "]
+		}).then(function(response){
+			//After request successful
+			alert("Saved blog post");
+			window.location = "#/page/list/0";
+		});
+	};
 } ]);
 
 //Handles editing page
@@ -386,13 +406,26 @@ app.controller('EditPageController', ['$http', function($http){
 app.controller('ListPagesController', ['$http', function($http){
 	var controller = this; //Needed to pass this object into the below function
 	$http.post(apiendpoint, {
-		//An object to post to API goes here.
-	}).then(function(response) {
+			"request": "getAllPages"
+		}).then(function(response) {
 		//Transform the data as necessary.
         
-		controller.response = response.data; //Push the data from the API response into the "response" array of this controller
+		//Push the table information from the response into the controller.
+		controller.cols = ['Title', 'Content', 'Delete'];
 		
-		console.log(controller.response); //Log the controller for debugging.
+		controller.rows = [];
+		
+		for (i = 0; i < response.data.length; ++i){
+			controller.rows.push(
+				{
+					"Title": "<a href=\"#/post/edit/"+response.data[i].Name.S+"\">"+response.data[i].Name.S+"</a>",
+					"Content": response.data[i].Content.S,
+					"Delete":"<a class=\"text-danger\" href=\"#/post/delete/"+response.data[i].Name.S+"\">Delete "+response.data[i].Name.S+"</a>"
+				}
+			);
+		}
+		
+		console.log(response); //Log the controller for debugging.
     });
 } ]);
 

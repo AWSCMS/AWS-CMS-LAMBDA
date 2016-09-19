@@ -80,7 +80,7 @@ class Page(object):
                     "data": {"exception": str(e), "action": action}}
         
         # TODO: Add paging table
-        
+
         # Add page as json to bucket
         try:
             s3 = boto3.client("s3")

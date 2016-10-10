@@ -17,6 +17,8 @@ class Security(object):
     through a provided token.
     """
 
+    # TODO: Refactor function logic to remove repeating code  
+    
     @staticmethod
     def authenticate_and_authorize(token, request, token_table, user_table,
                                    role_table):

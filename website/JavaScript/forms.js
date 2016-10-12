@@ -1,27 +1,24 @@
-/*global angular, FormData, FileReader*/
+/*global angular, FormData, FileReader, console, dim, startLoadingAnimation, stopLoadingAnimation, alert, removeElement*/
 
-angular.module("forms", ["api"])
+angular.module("forms", ["api", "ngRoute"])
   .config(function ($httpProvider) {
     "use strict";
     $httpProvider.defaults.withCredentials = true;
   })
-  .controller("cmsPostListCtrl", ["$scope", "$http", "apiUrl", function ($scope, $http, apiUrl) {
+  .controller("cmsPostListCtrl", ["$scope", "$http", "$routeParams", "apiUrl", function ($scope, $http, $routeParams, apiUrl) {
     "use strict";
-    
     var ctrlScope = this;
-
-    // Set post list
-    ctrlScope.posts = [];
+    ctrlScope.posts = [{title: "loading"}];
 
     /** Function: Delete Blog 
     Passed an ID and submits a delete request to
     Lambda. Displays a Wait animation while waiting 
     for a response. On the event of a success/failure
     a success/failure message will be displayed 
-    */  
+    */
     $scope.deleteBlog = function (post) {
       // get identifier Variable
-      var postID = post['id'];
+      var postID = post.id;
       console.log(postID);
       // Call Delete Request        
       dim(true);
@@ -38,7 +35,7 @@ angular.module("forms", ["api"])
         dim(false);
         console.log("Deleted Successfully");
         // Remove element from view
-        removeElement('#'+postID);
+        removeElement('#' + postID);
       }, function errorCallback(response) {
         // Stop animation
         stopLoadingAnimation();
@@ -46,71 +43,59 @@ angular.module("forms", ["api"])
       });
     };
 
-    /**
-     * Function: Returns all blogs by posting to the Lambda
-     * package and populating a list for an ng-repeat
-     */
-    var getAllBlogs  = function () {
-        //LoadingAnimation();
-        ctrlScope.posts = [{title: "loading"}];
-        $http.post(
-          apiUrl,
-          {
-            "request": "getAllBlogs"
-          }
-        ).then(function successCallback(response) {
-          var blogNum, responseMessage, responseData;
-          responseMessage = response.data.message;
-          responseData = response.data.data;
-          ctrlScope.posts = [];
-          
-          for (blogNum in responseData) {
-            ctrlScope.posts.push(
-              {
-                title: responseData[blogNum].Title,
-                author: responseData[blogNum].Author,
-                description: responseData[blogNum].Description,
-                keywords: responseData[blogNum].Keywords.join(", "),
-                date: responseData[blogNum].SavedDate,
-                id: responseData[blogNum].ID,
-              }
-            );    
-          }
-        }, function errorCallback(response) {
-          ctrlScope.posts = [
-            {
-              title: response.data.error,
-              author: response.data.error,
-              description: response.data.error,
-              keywords: response.data.error,
-              date: response.data.error,
-              id: response.data.error,
-              counter: response.data.error
-            }
-          ];
-        });
-    }
+    $http.post(
+      apiUrl,
+      {
+        "request": "getAllBlogs"
+      }
+    ).then(function successCallback(response) {
+      var blogNum, responseMessage, responseData;
+      responseMessage = response.data.message;
+      responseData = response.data.data;
+      ctrlScope.posts = [];
 
-    // Get all blogs on Page load
-    getAllBlogs();
-  }
-  ])
+      for (blogNum in responseData) {
+        ctrlScope.posts.push(
+          {
+            title: responseData[blogNum].Title,
+            author: responseData[blogNum].Author,
+            description: responseData[blogNum].Description,
+            keywords: responseData[blogNum].Keywords.join(", "),
+            date: responseData[blogNum].SavedDate,
+            id: responseData[blogNum].ID
+          }
+        );
+      }
+    }, function errorCallback(response) {
+      ctrlScope.posts = [
+        {
+          title: response.data.error,
+          author: response.data.error,
+          description: response.data.error,
+          keywords: response.data.error,
+          date: response.data.error,
+          id: response.data.error,
+          counter: response.data.error
+        }
+      ];
+    });
+  }])
   .controller("cmsPageListCtrl", ["$scope", "$http", "apiUrl", function ($scope, $http, apiUrl) {
     "use strict";
-
     var ctrlScope = this;
-
+    ctrlScope.pages = [{name: "loading"}];
+    
     /** Function: Delete Page 
     Passed an ID and submits a delete request to
     Lambda. Displays a Wait animation while waiting 
     for a response. On the event of a success/failure
     a success/failure message will be displayed 
-    */  
+    */
     $scope.deletePage = function (page) {
       // get identifier Variable
-      var name = page['name'];
+      var name = page.name;
       console.log(name);
-           // Call Delete Request        
+      // Call Delete Request        
       dim(true);
       startLoadingAnimation();
       $http.post(
@@ -125,7 +110,7 @@ angular.module("forms", ["api"])
         dim(false);
         console.log("Deleted Successfully");
         // Remove element from view
-        removeElement('#'+name);
+        removeElement('#' + name);
       }, function errorCallback(response) {
         // Stop animation
         stopLoadingAnimation();
@@ -133,9 +118,6 @@ angular.module("forms", ["api"])
       });
     };
     
-
-    
-    ctrlScope.pages = [{name: "loading"}];
     $http.post(
       apiUrl,
       {
@@ -170,7 +152,6 @@ angular.module("forms", ["api"])
   }])
   .controller("cmsUserListCtrl", ["$scope", "$http", "apiUrl", function ($scope, $http, apiUrl) {
     "use strict";
-
     var ctrlScope = this;
 
     /** Function: Delete User 
@@ -178,10 +159,10 @@ angular.module("forms", ["api"])
     Lambda. Displays a Wait animation while waiting 
     for a response. On the event of a success/failure
     a success/failure message will be displayed 
-    */  
+    */
     $scope.deleteUser = function (user) {
       // get identifier Variable
-      var email = user['email'];
+      var email = user.email;
       console.log(email);
            // Call Delete Request        
       dim(true);
@@ -198,7 +179,7 @@ angular.module("forms", ["api"])
         dim(false);
         console.log("Deleted Successfully");
         // Remove element from view and remove # and @ from selector
-        removeElement('#'+email.replace(/[#@]/g, ""));
+        removeElement('#' + email.replace(/[#@]/g, ""));
       }, function errorCallback(response) {
         // Stop animation
         stopLoadingAnimation();
@@ -221,6 +202,7 @@ angular.module("forms", ["api"])
       for (userNum in responseData) {
         ctrlScope.users.push(
           {
+            id: responseData[userNum].ID,
             email: responseData[userNum].Email,
             username: responseData[userNum].Username,
             role: responseData[userNum].Role
@@ -246,10 +228,10 @@ angular.module("forms", ["api"])
     Lambda. Displays a Wait animation while waiting 
     for a response. On the event of a success/failure
     a success/failure message will be displayed 
-    */  
+    */
     $scope.deleteRole = function (role) {
       // get identifier Variable
-      var roleName = role['roleName'];
+      var roleName = role.Name;
       console.log(roleName);
            // Call Delete Request        
       dim(true);
@@ -266,7 +248,7 @@ angular.module("forms", ["api"])
         dim(false);
         console.log("Deleted Successfully");
         // Remove element from view and remove # and @ from selector
-        removeElement('#'+roleName);
+        removeElement('#' + roleName);
       }, function errorCallback(response) {
         // Stop animation
         stopLoadingAnimation();
@@ -303,7 +285,7 @@ angular.module("forms", ["api"])
       ];
     });
   }])
-  .controller("cmsBlogFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsBlogFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
 
@@ -329,28 +311,74 @@ angular.module("forms", ["api"])
     var ctrlScope = this;
     
     ctrlScope.submitNav = function () {
-      $http.post(
-        apiUrl,
-        {
-          "request": "putNavItems",
-          "nav_items": [
-            {
-              "title": ctrlScope.nav_item.title,
-              "url": ctrlScope.nav_item.url,
-              "children": []
-            }
-          ]
+      var str, isJson;
+      
+      str = ctrlScope.nav_json;
+      isJson = function (str) {
+        try {
+          JSON.parse(str);
+        } catch (e) {
+          return false;
         }
-      ).then(function successCallback(response) {
-        ctrlScope.status = ("Successfully published nav items");
-      }, function errorCallback(response) {
-        ctrlScope.status = response.data.error;
-      });
+        return true;
+      };
+      
+      if (isJson(str)) {
+        $http.post(
+          apiUrl,
+          {
+            "request": "putNavItems",
+            "nav_json": str.replace(/(\r\n|\n|\r)/gm, "")
+          }
+        ).then(function successCallback(response) {
+          ctrlScope.status = ("Successfully published nav items");
+          alert("Successfully published nav items");
+        }, function errorCallback(response) {
+          ctrlScope.status = response.data.error;
+          alert("Unable to publish nav items");
+        });
+      } else {
+        alert("Not valid JSON");
+      }
     };
+
+    $http.post(
+      apiUrl,
+      {
+        "request": "getNavItems"
+      }
+    ).then(function successCallback(response) {
+
+      var navJson = response.data.data;
+
+      // Remove escaped double quotes
+      navJson = navJson.replace(/\\"/g, '"');
+
+      // Remove first and last double quotes
+      if (navJson.charAt(0) === "\"" && navJson.charAt(navJson.length - 1 === "\"")) {
+        navJson = navJson.substr(1, navJson.length - 2);
+      }
+
+      navJson = JSON.parse(navJson);
+
+      ctrlScope.nav_json = JSON.stringify(navJson, null, 4);
+
+    }, function errorCallback(response) {
+      ctrlScope.nav = [
+        {
+          nav_json: response.data.error
+        }
+      ];
+    });
   }])
-  .controller("cmsPageFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsPageFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
+    ctrlScope.retrieving = false;
+    ctrlScope.header = "New Page";
+    ctrlScope.namePlaceholder = "Page name";
+    ctrlScope.descriptionPlaceholder = "Description";
+    ctrlScope.keywordsPlaceholder = "Keywords";
     
     ctrlScope.submitPage = function () {
       $http.post(
@@ -368,8 +396,32 @@ angular.module("forms", ["api"])
         ctrlScope.status = response.data.error;
       });
     };
+    
+    if ($routeParams.pageName !== undefined) {
+      ctrlScope.editing = true;
+      ctrlScope.retrieving = true;
+      ctrlScope.header = "Edit Page";
+      ctrlScope.namePlaceholder = "Retrieving...";
+      ctrlScope.descriptionPlaceholder = "Retrieving...";
+      ctrlScope.keywordsPlaceholder = "Retrieving...";
+      $http.post(
+        apiUrl,
+        {
+          "request": "getPage",
+          "pageName": $routeParams.pageName
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
+        ctrlScope.page = {
+          name: response.data.PageName,
+          description: response.data.Description,
+          keywords: response.data.Keywords.join(" "),
+          content: response.data.Content
+        };
+      });
+    }
   }])
-  .controller("cmsUserFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsUserFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
     
@@ -395,9 +447,13 @@ angular.module("forms", ["api"])
       });
     };
   }])
-  .controller("cmsRoleFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+  .controller("cmsRoleFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
     "use strict";
     var ctrlScope = this;
+    ctrlScope.retrieving = false;
+    ctrlScope.header = "New Role";
+    ctrlScope.namePlaceholder = "Role name";
+    ctrlScope.permissionsPlaceholder = "Permissions";
     
     ctrlScope.submitRole = function () {
       $http.post(
@@ -413,12 +469,133 @@ angular.module("forms", ["api"])
         ctrlScope.status = response.data.error;
       });
     };
+    
+    if ($routeParams.roleName !== undefined) {
+      ctrlScope.editing = true;
+      ctrlScope.retrieving = true;
+      ctrlScope.header = "Edit Role";
+      ctrlScope.namePlaceholder = "Retrieving...";
+      ctrlScope.permissionsPlaceholder = "Retrieving...";
+      $http.post(
+        apiUrl,
+        {
+          "request": "getRole",
+          "roleName": $routeParams.roleName
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
+        ctrlScope.role = {
+          roleName: response.data.data.RoleName,
+          permissions: response.data.data.Permissions.join(" ")
+        };
+      });
+    }
+  }])
+  .controller("cmsSettingsFormCtrl", ["$http", "apiUrl", function ($http, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    ctrlScope.retrieving = true;
+    ctrlScope.namePlaceholder = "Retrieving...";
+    ctrlScope.descriptionPlaceholder = "Retrieving...";
+    ctrlScope.facebookNamePlaceholder = "Retrieving...";
+    ctrlScope.twitterHandlePlaceholder = "Retrieving...";
+    ctrlScope.instagramNamePlaceholder = "Retrieving...";
+    ctrlScope.googlePlusNamePlaceholder = "Retrieving...";
+    ctrlScope.disqusIdPlaceholder = "Retrieving...";
+    ctrlScope.googleIdPlaceholder = "Retrieving...";
+    
+    ctrlScope.submitSettings = function () {
+      ctrlScope.retrieving = true;
+      
+      var siteName, siteDescription, facebook, twitter, instagram, googlePlus, footer, disqusId, googleId;
+      
+      if (ctrlScope.name !== undefined) { siteName = ctrlScope.name; } else { siteName = ""; }
+      if (ctrlScope.description !== undefined) { siteDescription = ctrlScope.description; } else { siteDescription = ""; }
+      if (ctrlScope.facebookName !== undefined) { facebook = ctrlScope.facebookName; } else { facebook = ""; }
+      if (ctrlScope.twitterHandle !== undefined) { twitter = ctrlScope.twitterHandle; } else { twitter = ""; }
+      if (ctrlScope.instagramName !== undefined) { instagram = ctrlScope.instagramName; } else { instagram = ""; }
+      if (ctrlScope.googlePlusName !== undefined) { googlePlus = ctrlScope.googlePlusName; } else { googlePlus = ""; }
+      if (ctrlScope.footer !== undefined) { footer = ctrlScope.footer; } else { footer = ""; }
+      if (ctrlScope.disqusId !== undefined) { disqusId = ctrlScope.disqusId; } else { disqusId = ""; }
+      if (ctrlScope.googleId !== undefined) { googleId = ctrlScope.googleId; } else { googleId = ""; }
+      
+      $http.post(
+        apiUrl,
+        {
+          "request": "putSiteSettings",
+          "siteName": siteName,
+          "siteDescription": siteDescription,
+          "facebook": facebook,
+          "twitter": twitter,
+          "instagram": instagram,
+          "googlePlus": googlePlus,
+          "footer": footer,
+          "disqusId": disqusId,
+          "googleId": googleId
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.retrieving = false;
+      }).then(function errorCallback(response) {
+        ctrlScope.retrieving = false;
+      });
+    };
+    
+    $http.post(
+      apiUrl,
+      {
+        "request": "getSiteSettings"
+      }
+    ).then(function successCallback(response) {
+      ctrlScope.retrieving = false;
+      ctrlScope.namePlaceholder = "Name";
+      ctrlScope.descriptionPlaceholder = "Description";
+      ctrlScope.facebookNamePlaceholder = "Facebook name";
+      ctrlScope.twitterHandlePlaceholder = "Twitter handle";
+      ctrlScope.instagramNamePlaceholder = "Instagram name";
+      ctrlScope.googlePlusNamePlaceholder = "Google plus name";
+      ctrlScope.disqusIdPlaceholder = "Disqus id";
+      ctrlScope.googleIdPlaceholder = "Google id";
+      
+      ctrlScope.name = response.data.site_name;
+      ctrlScope.description = response.data.site_description;
+      ctrlScope.footer = response.data.footer;
+      ctrlScope.facebookName = response.data.facebook;
+      ctrlScope.twitterHandle = response.data.twitter;
+      ctrlScope.instagramName = response.data.instagram;
+      ctrlScope.googlePlusName = response.data.google_plus;
+      ctrlScope.disqusId = response.data.disqus_id;
+      ctrlScope.googleId = response.data.google_id;
+    });
+  }])
+  .controller("cmsVisitorNavFormCtrl", ["$http", "$routeParams", "apiUrl", function ($http, $routeParams, apiUrl) {
+    "use strict";
+    var ctrlScope = this;
+    
+    ctrlScope.submitNav = function () {
+      $http.post(
+        apiUrl,
+        {
+          "request": "putNavItems",
+          "nav_items": [
+            {
+              "title": ctrlScope.nav_item.title,
+              "url": ctrlScope.nav_item.url,
+              "children": []
+            }
+          ]
+        }
+      ).then(function successCallback(response) {
+        ctrlScope.status = ("Successfully published nav items");
+      }, function errorCallback(response) {
+        ctrlScope.status = response.data.error;
+      });
+    };
   }])
   .controller("cmsUploadImageCtrl", ["$http", "apiUrl", "$scope", function ($http, apiUrl, $scope) {
     "use strict";
     var ctrlScope = this;
     var reader = new FileReader();
-    reader.onload = function(event) {
+    reader.onload = function (event) {
       ctrlScope.imageUrl = event.target.result;
       $scope.$apply();
     }

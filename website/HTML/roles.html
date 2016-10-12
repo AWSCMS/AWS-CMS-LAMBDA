@@ -31,7 +31,7 @@
                       <td>Loading...</td>
                     </tr>
                     <tr id={{role.roleName}} ng-hide="role.roleName=='loading'">
-                      <td>{{role.roleName}}</td>
+                      <td><a ng-href="#/role-form/{{role.roleName}}">{{role.roleName}}</a></td>
                       <td>{{role.permissions}}</td>
                       <td>
                         <form ng-submit="deleteRole(role)" ng-controller="cmsRoleListCtrl">
